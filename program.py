@@ -20,14 +20,21 @@ def get_breeds_from(soup):
                         pass
 
 app = Flask(__name__)
+html_doc = get_html_doc()
+soup = BeautifulSoup(html_doc, 'lxml')
+breeds = [breed for breed in get_breeds_from(soup)]
 
 @app.route('/breeds')
 def get_breeds():
-    html_doc = get_html_doc()
-    soup = BeautifulSoup(html_doc, 'lxml')
-    breeds = [breed for breed in get_breeds_from(soup)]
-    return {'breeds': breeds}
-    
+    return {'breeds': [{'id':index, 'value': value} for index, value in enumerate(breeds)]}
+
+@app.route('/breeds/<int:breed_id>')
+def get_breed(breed_id):
+    try:
+        return {'breed': {'id': breed_id, 'value': breeds[breed_id]}}
+    except:
+        return {'message': 'not found'}, 404
+
 
 if __name__ == '__main__':
     
