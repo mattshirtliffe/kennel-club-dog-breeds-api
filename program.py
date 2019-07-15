@@ -7,6 +7,7 @@ def get_html_doc():
     response = requests.get('https://www.thekennelclub.org.uk/services/public/breed/Default.aspx')
     return response.text
 
+
 def get_breeds_from(soup):
     breed_div_id = 'MainContent_BreedListFront'
     for div in soup.find_all('div'):
@@ -19,6 +20,14 @@ def get_breeds_from(soup):
                     except:
                         pass
 
+
+def print_breeds_in_console():
+    html_doc = get_html_doc()
+    soup = BeautifulSoup(html_doc, 'lxml')
+    for index, breed in enumerate(get_breeds_from(soup)):
+        print(index, breed)
+
+
 app = Flask(__name__)
 html_doc = get_html_doc()
 soup = BeautifulSoup(html_doc, 'lxml')
@@ -28,6 +37,7 @@ breeds = [breed for breed in get_breeds_from(soup)]
 def get_breeds():
     return {'breeds': [{'id':index, 'value': value} for index, value in enumerate(breeds)]}
 
+
 @app.route('/breeds/<int:breed_id>')
 def get_breed(breed_id):
     try:
@@ -35,13 +45,8 @@ def get_breed(breed_id):
     except:
         return {'message': 'not found'}, 404
 
-
 if __name__ == '__main__':
-    
-    html_doc = get_html_doc()
-    soup = BeautifulSoup(html_doc, 'lxml')
-    breeds = [breed for breed in get_breeds_from(soup)]
-    print(breeds)
+    print_breeds_in_console()
 
 
 
